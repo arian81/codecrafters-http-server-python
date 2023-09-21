@@ -9,11 +9,13 @@ def parse(req: bytes, directory):
     processed = req.decode("utf-8").split("\r\n")
     path = processed.pop(0).split(" ")[1]
     reqdict = {}
+    body = ""
     for i in processed:
-        if i != "":
+        if ":" in i:
             key, value = i.split(": ")
             reqdict[key] = value
-    print(reqdict.keys())
+        elif i != "":
+            body = i
 
     if path == "/":
         resp = "HTTP/1.1 200 OK\r\n\r\n"
@@ -21,19 +23,23 @@ def parse(req: bytes, directory):
         resp = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(reqdict['User-Agent'])}\r\n\r\n{reqdict['User-Agent']}"
     elif "files" in path:
         filename = path[7:]
-        if filename in os.listdir(directory):
-            with open(directory + filename, "r") as file:
-                data = file.read()
-            resp = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {len(data)}\r\n\r\n{data}"
+        if "GET" in path:
+            if filename in os.listdir(directory):
+                with open(directory + filename, "r") as file:
+                    data = file.read()
+                resp = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {len(data)}\r\n\r\n{data}"
+            else:
+                resp = "HTTP/1.1 404 Not Found\r\n\r\n"
         else:
-            resp = "HTTP/1.1 404 Not Found\r\n\r\n"
+            with open(os.path.join(directory, filename), "wb") as file:
+                file.write(body.encode("utf-8"))
+            resp = "HTTP/1.1 200 OK\r\n\r\n"
 
     elif "echo" in path:
         random_string = path[6:]
         resp = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(random_string)}\r\n\r\n{random_string}"
     else:
         resp = "HTTP/1.1 404 Not Found\r\n\r\n"
-    print(resp)
     return resp.encode("utf-8")
 
 
@@ -51,8 +57,6 @@ def main():
     parser = argparse.ArgumentParser(description="input file directory")
     parser.add_argument("--directory", type=str)
     args = parser.parse_args()
-
-    print(args.directory)
 
     # Uncomment this to pass the first stage
     #
