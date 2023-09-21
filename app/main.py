@@ -32,7 +32,7 @@ def parse(req: bytes, directory):
         elif method == "POST":
             with open(os.path.join(directory, filename), "wb") as file:
                 file.write(body.encode("utf-8"))
-            resp = "HTTP/1.1 200 OK\r\n\r\n"
+            resp = "HTTP/1.1 201 OK\r\n\r\n"
         else:
             resp = "METHOD NOT SUPPORTED"
 
