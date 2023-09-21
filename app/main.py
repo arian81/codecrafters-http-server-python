@@ -4,14 +4,15 @@ import os
 
 
 def parse(req: bytes):
-    processed = req.split(b"\r\n")
-    print(processed[0].split(b" "))
-    if processed[0].split(b" ")[1] == b"/":
-        return b"HTTP/1.1 200 OK\r\n\r\n"
-    else:
-        print("404 sent ")
-        return b"HTTP/1.1 404 Not Found\r\n\r\n"
-    print(processed)
+    processed = str(req).split("\r\n")
+    path = processed[0].split(" ")[1]
+    random_string = path[6:]
+    resp = f"""HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: {len(random_string)}
+
+{random_string}"""
+    return resp.encode("utf-8")
 
 
 def main():
