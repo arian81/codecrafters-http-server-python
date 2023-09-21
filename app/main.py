@@ -6,7 +6,7 @@ import os
 def parse(req: bytes):
     processed = req.split(b"\r\n")
     print(processed[0].split(b" "))
-    if processed[0].split(b" ")[1] == "/":
+    if processed[0].split(b" ")[1] == b"/":
         return b"HTTP/1.1 200 OK\r\n\r\n"
     else:
         print("404 sent ")
