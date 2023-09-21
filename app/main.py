@@ -24,7 +24,7 @@ def parse(req: bytes, directory):
         if filename in os.listdir(directory):
             with open(directory + "/" + filename, "rb") as file:
                 data = file.read()
-            resp = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n\r\n{data}"
+            resp = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {len(data)}\r\n\r\n{data}"
         else:
             resp = "HTTP/1.1 404 Not Found\r\n\r\n"
 
