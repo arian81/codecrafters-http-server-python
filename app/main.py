@@ -1,6 +1,9 @@
 # Uncomment this to pass the first stage
 import socket
 import os
+import threading
+import signal
+import sys
 
 
 def parse(req: bytes):
@@ -26,6 +29,13 @@ def parse(req: bytes):
     return resp.encode("utf-8")
 
 
+def new_conn(conn: socket, addr):
+    print(f"connected by {addr}")
+    data = conn.recv(1024)
+    conn.sendall(parse(data))
+    conn.close()
+
+
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
@@ -36,17 +46,12 @@ def main():
         server_socket = socket.create_server(("localhost", 4221))
     else:
         server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-
-    conn, addr = server_socket.accept()  # wait for client
-    with conn:
-        print(f"connected by {addr}")
-        data = conn.recv(1024)
-        conn.sendall(parse(data))
-        # while True:
-        #     data = conn.recv(1024)
-        #     if not data:
-        #         break
-        #     conn.sendall(b"HTTP/1.1 200 OK\r\n\r\n")
+    threads = []
+    while True:
+        conn, addr = server_socket.accept()  # wait for client
+        thread = threading.Thread(target=new_conn, args=[conn, addr])
+        thread.start()
+        threads.append(thread)
 
 
 if __name__ == "__main__":
