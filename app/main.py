@@ -6,13 +6,16 @@ import os
 def parse(req: bytes):
     processed = str(req).split("\r\n")
     path = processed[0].split(" ")[1]
-    random_string = path[6:]
-    resp = f"""HTTP/1.1 200 OK
-Content-Type: text/plain
-Content-Length: {len(random_string)}
+    if "echo" in path:
+        random_string = path[6:]
+        resp = f"""HTTP/1.1 200 OK
+    Content-Type: text/plain
+    Content-Length: {len(random_string)}
 
 {random_string}"""
-    return resp.encode("utf-8")
+        return resp.encode("utf-8")
+    else:
+        return b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 
 def main():
