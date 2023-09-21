@@ -22,7 +22,7 @@ def parse(req: bytes, directory):
     elif "files" in path:
         filename = path[7:]
         if filename in os.listdir(directory):
-            with open(directory + "/" + filename, "rb") as file:
+            with open(directory + filename, "r") as file:
                 data = file.read()
             resp = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {len(data)}\r\n\r\n{data}"
         else:
