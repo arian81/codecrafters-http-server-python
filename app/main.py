@@ -6,7 +6,9 @@ import os
 def parse(req: bytes):
     processed = str(req).split("\r\n")
     path = processed[0].split(" ")[1]
-    if "echo" in path:
+    if path == "/":
+        return b"HTTP/1.1 200 OK\r\n\r\n"
+    elif "echo" in path:
         random_string = path[6:]
         resp = f"""HTTP/1.1 200 OK
     Content-Type: text/plain
