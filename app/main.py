@@ -29,8 +29,7 @@ def main():
     with conn:
         print(f"connected by {addr}")
         data = conn.recv(1024)
-        parse(data)
-        conn.sendall(b"HTTP/1.1 200 OK\r\n\r\n")
+        conn.sendall(parse(data))
         # while True:
         #     data = conn.recv(1024)
         #     if not data:
