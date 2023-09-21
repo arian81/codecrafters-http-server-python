@@ -7,7 +7,7 @@ import argparse
 
 def parse(req: bytes, directory):
     processed = req.decode("utf-8").split("\r\n")
-    path = processed.pop(0).split(" ")[1]
+    method, path, *_ = processed.pop(0).split(" ")
     reqdict = {}
     body = ""
     for i in processed:
@@ -16,24 +16,25 @@ def parse(req: bytes, directory):
             reqdict[key] = value
         elif i != "":
             body = i
-
     if path == "/":
         resp = "HTTP/1.1 200 OK\r\n\r\n"
     elif path == "/user-agent":
         resp = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(reqdict['User-Agent'])}\r\n\r\n{reqdict['User-Agent']}"
     elif "files" in path:
         filename = path[7:]
-        if "GET" in path:
+        if method == "GET":
             if filename in os.listdir(directory):
-                with open(directory + filename, "r") as file:
+                with open(os.path.join(directory, filename), "r") as file:
                     data = file.read()
                 resp = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {len(data)}\r\n\r\n{data}"
             else:
                 resp = "HTTP/1.1 404 Not Found\r\n\r\n"
-        else:
+        elif method == "POST":
             with open(os.path.join(directory, filename), "wb") as file:
                 file.write(body.encode("utf-8"))
             resp = "HTTP/1.1 200 OK\r\n\r\n"
+        else:
+            resp = "METHOD NOT SUPPORTED"
 
     elif "echo" in path:
         random_string = path[6:]
