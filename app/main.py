@@ -10,11 +10,7 @@ def parse(req: bytes):
         return b"HTTP/1.1 200 OK\r\n\r\n"
     elif "echo" in path:
         random_string = path[6:]
-        resp = f"""HTTP/1.1 200 OK
-    Content-Type: text/plain
-    Content-Length: {len(random_string)}
-
-{random_string}"""
+        resp = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(random_string)}\r\n\r\n{random_string}"
         return resp.encode("utf-8")
     else:
         return b"HTTP/1.1 404 Not Found\r\n\r\n"
