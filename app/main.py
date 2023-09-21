@@ -14,14 +14,15 @@ def parse(req: bytes):
     print(reqdict.keys())
 
     if path == "/":
-        resp = b"HTTP/1.1 200 OK\r\n\r\n"
-    if path == "/user-agent":
+        resp = "HTTP/1.1 200 OK\r\n\r\n"
+    elif path == "/user-agent":
         resp = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(reqdict['User-Agent'])}\r\n\r\n{reqdict['User-Agent']}"
     elif "echo" in path:
         random_string = path[6:]
         resp = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(random_string)}\r\n\r\n{random_string}"
     else:
         resp = "HTTP/1.1 404 Not Found\r\n\r\n"
+    print(resp)
     return resp.encode("utf-8")
 
 
